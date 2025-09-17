@@ -1,16 +1,19 @@
 # genesis-contracts
 
+> NOTE (IMPORTANT!)
+> If you modify contracts, run `forge build` before testing/deploying/etc, or Foundry may not recompile them!
+
 #### Setup genesis
 
 Setup genesis whenever contracts get changed
 ### 1. Install dependencies and submodules
 ```bash
-$ npm install
-$ git submodule init
-$ git submodule update
+npm install
+git submodule init
+git submodule update
 ```
 
-### 2. Compile Matic contracts
+### 2. Compile PoS contracts
 ```bash
 $ cd pos-contracts
 $ npm install
@@ -44,7 +47,7 @@ Following command will generate `genesis.json` file from `genesis-template.json`
 
 ```bash
 # Generate genesis file
-$ node generate-genesis.js --bor-chain-id <bor-chain-id> --heimdall-chain-id <heimdall-chain-id>
+node generate-genesis.js --bor-chain-id <bor-chain-id> --heimdall-chain-id <heimdall-chain-id>
 ```
 
 ### 7. Run Tests

@@ -26,18 +26,12 @@ program.option(
 program.parse(process.argv)
 
 // compile contract
-function compileContract(key, contractFile, contractName) {
+async function compileContract(key, contractFile, contractName, solcVersion) {
   return new Promise((resolve, reject) => {
-    const ls = spawn("solc", [
-      "--bin-runtime",
-      "openzeppelin-solidity/=node_modules/openzeppelin-solidity/",
-      "solidity-rlp/=node_modules/solidity-rlp/",
-      "/=/",
-      // "--optimize",
-      // "--optimize-runs",
-      // "200",
-      contractFile
-    ])
+    const ls = spawn(
+      `solc-select use ${solcVersion} && solc --bin-runtime openzeppelin-solidity/=node_modules/openzeppelin-solidity/ /=/ ${contractFile}`,
+      { shell: true }
+    )
 
     const result = []
     ls.stdout.on("data", data => {
@@ -64,25 +58,32 @@ function compileContract(key, contractFile, contractName) {
   })
 }
 
-// compile files
-Promise.all([
-  compileContract(
-    "borValidatorSetContract",
-    "contracts/BorValidatorSet.sol",
-    "BorValidatorSet"
-  ),
-  compileContract(
-    "borStateReceiverContract",
-    "contracts/StateReceiver.sol",
-    "StateReceiver"
-  ),
-  compileContract(
-    "maticChildERC20Contract",
-    "pos-contracts/contracts/child/MRC20.sol",
-    "MRC20"
-  )
-]).then(result => {
-  const totalMaticSupply = web3.utils.toBN("10000000000")
+// compile files sequentially
+async function main() {
+  const result = []
+  for (const file of [
+    [
+      "borValidatorSetContract",
+      "contracts/BorValidatorSet.sol",
+      "BorValidatorSet",
+      "0.5.17"
+    ],
+    [
+      "borStateReceiverContract",
+      "contracts/StateReceiver.sol",
+      "StateReceiver",
+      "0.6.12"
+    ],
+    [
+      "maticChildERC20Contract",
+      "matic-contracts/contracts/child/MRC20.sol",
+      "MRC20",
+      "0.5.17"
+    ]
+  ]) {
+    result.push(await compileContract(...file))
+  }
+  const totalMaticSupply = web3.utils.toBN('10000000000')
 
   var validatorsBalance = web3.utils.toBN(0)
   validators.forEach(v => {
@@ -108,7 +109,9 @@ Promise.all([
   const templateString = fs.readFileSync(program.template).toString()
   const resultString = nunjucks.renderString(templateString, data)
   fs.writeFileSync(program.output, resultString)
-}).catch(err => {
+}
+
+main().catch(err => {
   console.log(err)
   process.exit(1)
 })

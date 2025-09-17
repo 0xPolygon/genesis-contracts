@@ -27,5 +27,4 @@ node scripts/process-templates.js --bor-chain-id $1
 npm run truffle:compile
 cd ..
 node generate-borvalidatorset.js --bor-chain-id $1 --heimdall-chain-id $2
-npm run truffle:compile
 node generate-genesis.js --bor-chain-id $1 --heimdall-chain-id $2

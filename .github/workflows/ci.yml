@@ -3,33 +3,41 @@ name: CI
 on:
   push:
     branches:
-      - develop
+      - dev
       - master
   pull_request:
-    branches: 
-      - develop
+    branches:
+      - dev
       - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Update Path
-      run: echo "$RUNNER_WORKSPACE/$(basename $GITHUB_REPOSITORY)" >> $GITHUB_PATH # Make it accessible from runner
-    - name: Install solc
-      run: |
-        set -x
-        wget -c https://github.com/ethereum/solidity/releases/download/v0.5.17/solc-static-linux
-        mv solc-static-linux solc
-        chmod +x solc
-        solc --version
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
-        registry-url: 'https://registry.npmjs.org'
-    - name: Generate genesis file
-      run: bash generate.sh 15001 heimdall-15001
-    - name: Run tests
-      run: npm run test:ci
+      - uses: actions/checkout@v3
+      - name: Update Path
+        run: echo "$RUNNER_WORKSPACE/$(basename $GITHUB_REPOSITORY)" >> $GITHUB_PATH # Make it accessible from runner
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install solc-select
+        run: |
+          sudo apt update
+          sudo apt install python3 python3-pip -y
+          pip install solc-select
+      - name: Install Solidity Version
+        run: |
+          solc-select install 0.5.17
+          solc-select install 0.6.12
+          solc-select use 0.5.17
+          solc --version
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+      - name: Generate genesis file
+        run: bash generate.sh 15001 heimdall-15001
+      - name: Run tests
+        run: forge build && forge test -vvv
