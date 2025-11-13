@@ -15,11 +15,15 @@
     "londonBlock": 0,
     "shanghaiBlock": 0,
     "cancunBlock": 0,
+    "pragueBlock": 128,
     "bor": {
       "jaipurBlock": 0,
       "delhiBlock": 0,
       "indoreBlock": 0,
       "ahmedabadBlock": 0,
+      "bhilaiBlock": 128,
+      "rioBlock": 128,
+      "madhugiriBlock": 128,
       "stateSyncConfirmationDelay": {
         "0": 128
       },

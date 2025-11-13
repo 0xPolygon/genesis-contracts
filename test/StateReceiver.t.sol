@@ -166,6 +166,7 @@ contract StateReceiverTest is Test {
   }
 
   function test_shouldNotReplayZeroLeaf(bytes32 root, bytes32[16] memory proof) public {
+    vm.assume(root != bytes32(0));
     vm.prank(rootSetter);
     stateReceiver.setRootAndLeafCount(root, 1);
 
@@ -174,13 +175,14 @@ contract StateReceiverTest is Test {
   }
 
   function test_shouldNotReplayInvalidProof(bytes32 root, bytes32[16] memory proof, bytes memory stateData) public {
+    vm.assume(root != bytes32(0));
     vm.prank(rootSetter);
     stateReceiver.setRootAndLeafCount(root, 1);
 
     vm.expectRevert("!proof");
     stateReceiver.replayHistoricFailedStateSync(
       proof,
-      vm.randomUint(0, 2 ** 16),
+      vm.randomUint(0, 2 ** 16 - 1),
       vm.randomUint(),
       vm.randomAddress(),
       stateData
