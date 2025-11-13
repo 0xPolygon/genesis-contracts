@@ -21,7 +21,7 @@ npm install
 npm run truffle:compile
 git submodule init
 git submodule update
-cd matic-contracts
+cd pos-contracts
 npm install
 node scripts/process-templates.js --bor-chain-id $1
 npm run truffle:compile

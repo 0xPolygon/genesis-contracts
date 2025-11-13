@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import { RLPReader } from "./utils/RLPReader.sol";
 
-import { BytesLib } from "../matic-contracts/contracts/common/lib/BytesLib.sol";
+import { BytesLib } from "../pos-contracts/contracts/common/lib/BytesLib.sol";
 import { System } from "./System.sol";
 import { ECVerify } from "./ECVerify.sol";
 import { ValidatorSet } from "./ValidatorSet.sol";

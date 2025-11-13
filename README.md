@@ -13,13 +13,13 @@ git submodule init
 git submodule update
 ```
 
-### 2. Compile Matic contracts
+### 2. Compile PoS contracts
 ```bash
-cd matic-contracts
-npm install
-node scripts/process-templates.js --bor-chain-id <bor-chain-id>
-npm run truffle:compile
-cd ..
+$ cd pos-contracts
+$ npm install
+$ npm run template:process -- --bor-chain-id 15001
+$ npx hardhat compile
+$ cd ..
 ```
 
 ### 3. Generate Bor validator set sol file
