@@ -69,6 +69,47 @@ async function compileContract(key, contractFile, contractName, solcVersion) {
   })
 }
 
+// parseReservedInputs validates and normalizes the devnet reserved-blockspace
+// flags. Returns falsy defaults when neither flag is set (mainnet/amoy renders
+// stay byte-identical). Fails loud on malformed input instead of writing a
+// broken genesis. reservedBlock stays a string so "0" remains truthy and can
+// schedule the fork at genesis — do not numerically coerce it.
+function parseReservedInputs(blockArg, clientsArg) {
+  if (blockArg == null && clientsArg == null) {
+    return { reservedBlock: null, reservedClients: [] }
+  }
+  if (blockArg == null || clientsArg == null) {
+    throw new Error("--reserved-block and --reserved-clients must be provided together")
+  }
+  if (!/^\d+$/.test(String(blockArg))) {
+    throw new Error(`--reserved-block must be a non-negative integer, got: ${blockArg}`)
+  }
+
+  let clients
+  try {
+    clients = JSON.parse(clientsArg)
+  } catch (e) {
+    throw new Error(`--reserved-clients is not valid JSON: ${e.message}`)
+  }
+  if (!Array.isArray(clients)) {
+    throw new Error("--reserved-clients must be a JSON array")
+  }
+  for (const c of clients) {
+    if (!c || !Array.isArray(c.addresses) || c.addresses.length === 0) {
+      throw new Error("each reserved client must have a non-empty 'addresses' array")
+    }
+    for (const a of c.addresses) {
+      if (!/^0x[0-9a-fA-F]{40}$/.test(a)) {
+        throw new Error(`invalid reserved client address: ${a}`)
+      }
+    }
+    if (!Number.isInteger(c.quotaGas) || c.quotaGas < 0) {
+      throw new Error(`reserved client quotaGas must be a non-negative integer, got: ${c.quotaGas}`)
+    }
+  }
+  return { reservedBlock: String(blockArg), reservedClients: clients }
+}
+
 // compile files sequentially
 async function main() {
   const result = []
@@ -113,8 +154,7 @@ async function main() {
     sprintSizes: sprintSizes,
     // Reserved-blockspace fork inputs. Both stay falsy unless the caller passes
     // the devnet flags, so mainnet/amoy genesis renders are unchanged.
-    reservedBlock: program.reservedBlock || null,
-    reservedClients: program.reservedClients ? JSON.parse(program.reservedClients) : []
+    ...parseReservedInputs(program.reservedBlock, program.reservedClients)
   }
 
   result.forEach(r => {
