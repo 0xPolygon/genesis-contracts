@@ -23,6 +23,17 @@ program.option(
   "Genesis template json",
   "./genesis-template.json"
 )
+program.option(
+  "--reserved-block <reserved-block>",
+  "Reserved-blockspace fork activation block. Omit to leave the fork unscheduled (mainnet/amoy default); set on devnets only."
+)
+program.option(
+  "--reserved-clients <reserved-clients>",
+  "Devnet test stub for the reserved client set, e.g. '[{\"addresses\":[\"0x..\"],\"quotaGas\":30000000}]'. " +
+    "This is NOT the registry contract schema (POS-3572) — it carries only addresses + per-block quotaGas, " +
+    "the minimum to test classification and (once POS-3575 lands) quota enforcement. feeMode/effectiveFrom/" +
+    "clientId/ceilingGas are out of scope here. Listed addresses are also funded in the genesis alloc."
+)
 program.parse(process.argv)
 
 // compile contract
@@ -99,7 +110,11 @@ async function main() {
       web3.utils.toWei(contractBalance.toString())
     ),
     blocks: blocks,
-    sprintSizes: sprintSizes
+    sprintSizes: sprintSizes,
+    // Reserved-blockspace fork inputs. Both stay falsy unless the caller passes
+    // the devnet flags, so mainnet/amoy genesis renders are unchanged.
+    reservedBlock: program.reservedBlock || null,
+    reservedClients: program.reservedClients ? JSON.parse(program.reservedClients) : []
   }
 
   result.forEach(r => {
