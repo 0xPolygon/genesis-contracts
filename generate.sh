@@ -20,7 +20,7 @@ fi
 npm install
 npm run truffle:compile
 git submodule init
-git submodule update
+git submodule update --init --recursive
 cd matic-contracts
 npm install
 node scripts/process-templates.js --bor-chain-id $1
