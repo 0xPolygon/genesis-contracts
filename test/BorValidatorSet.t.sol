@@ -107,13 +107,13 @@ contract BorValidatorSetTest is Test {
         assertEq(power, initialPowers[0]);
         assertEq(signer, initialAddresses[0]);
         vm.expectRevert();
-        borValidatorSet.validators(0, 1);
+        borValidatorSet.validators{gas: 100_000}(0, 1);
         (id, power, signer) = borValidatorSet.producers(0, 0);
         assertEq(id, 0);
         assertEq(power, initialPowers[0]);
         assertEq(signer, initialAddresses[0]);
         vm.expectRevert();
-        borValidatorSet.producers(0, 1);
+        borValidatorSet.producers{gas: 100_000}(0, 1);
         (number_, startBlock_, endBlock_) = borValidatorSet.spans(newSpan);
         assertEq(number_, newSpan);
         assertEq(startBlock_, startBlock);
@@ -131,9 +131,9 @@ contract BorValidatorSetTest is Test {
             assertEq(signer, signers[i]);
         }
         vm.expectRevert();
-        borValidatorSet.validators(newSpan, numOfValidators);
+        borValidatorSet.validators{gas: 100_000}(newSpan, numOfValidators);
         vm.expectRevert();
-        borValidatorSet.producers(newSpan, numOfProducers);
+        borValidatorSet.producers{gas: 100_000}(newSpan, numOfProducers);
     }
 
     function testRevert_commitSpan_StartLesserThanCurrentSpanStart() public {
