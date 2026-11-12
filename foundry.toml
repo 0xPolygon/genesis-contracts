@@ -2,6 +2,7 @@
 src = "contracts"
 out = "out"
 libs = ["lib"]
+auto_detect_remappings = false
 optimizer = true
 optimizer_runs = 999999
 via_ir = true
@@ -14,6 +15,8 @@ remappings = [
   "openzeppelin-solidity/=node_modules/openzeppelin-solidity/",
   "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
   "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/",
+  "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+  "openzeppelin-contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/",
 ]
 
 # settings of the StateReceiver code live at 0x1001 since Ahmedabad, see scripts/state-receiver-bytecode.sh
