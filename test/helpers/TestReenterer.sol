@@ -5,7 +5,9 @@ contract TestReenterer {
 
   function onStateReceive(uint256 id, bytes calldata _data) external {
     if (reenterCount++ == 0) {
-      (bool success, bytes memory ret) = msg.sender.call(abi.encodeWithSignature("replayFailedStateSync(uint256)", id));
+      (bool success, bytes memory ret) = msg.sender.call(
+        abi.encodeWithSignature("replayFailedStateSyncWithData(uint256,address,bytes)", id, address(this), _data)
+      );
       // bubble up revert for tests
       if (!success) {
         assembly {

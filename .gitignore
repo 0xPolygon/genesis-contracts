@@ -9,6 +9,7 @@ genesis.json
 .idea
 
 /out
+/out-fork
 /target
 /cache
 /coverage
