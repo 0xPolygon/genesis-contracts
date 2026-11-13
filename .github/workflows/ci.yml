@@ -36,7 +36,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: v1.9.0
       - name: Generate genesis file
         run: bash generate.sh 15001 heimdall-15001
       - name: Run tests
